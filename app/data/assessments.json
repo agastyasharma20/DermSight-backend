@@ -1,0 +1,80 @@
+[
+    {
+        "case_id": "97f38f6f-85cf-4eb1-8a29-f641956ed971",
+        "timestamp": "2026-02-14T09:25:10.435888",
+        "symptoms": "High Fevert with Redness",
+        "image_analysis": {
+            "width": 1024,
+            "height": 1536,
+            "redness_ratio": 0.0,
+            "resolution_quality": "High"
+        },
+        "result": {
+            "case_id": "97f38f6f-85cf-4eb1-8a29-f641956ed971",
+            "primary_condition": "Unspecified Dermatitis",
+            "confidence": 0.5,
+            "urgency_level": "Routine",
+            "reasoning": "",
+            "differential_diagnosis": [],
+            "recommendations": [],
+            "warning_signs": [],
+            "disclaimer": "This is not a medical diagnosis. Please consult a licensed healthcare professional."
+        }
+    },
+    {
+        "case_id": "b901af5b-312b-4695-bb08-5e4f200c6a8e",
+        "timestamp": "2026-02-14T10:47:23.792389",
+        "symptoms": "Difficulty breathing and swelling lips",
+        "image_analysis": {
+            "width": 1024,
+            "height": 1536,
+            "redness_ratio": 0.0,
+            "resolution_quality": "High"
+        },
+        "result": {
+            "case_id": "b901af5b-312b-4695-bb08-5e4f200c6a8e",
+            "primary_condition": "Severe Allergic Reaction (Anaphylaxis Suspected)",
+            "confidence": 0.95,
+            "urgency_level": "Emergency",
+            "reasoning": "Presence of airway or systemic symptoms suggests possible anaphylaxis.",
+            "differential_diagnosis": [],
+            "recommendations": [
+                "Call emergency services immediately.",
+                "Seek urgent hospital care."
+            ],
+            "warning_signs": [
+                "Airway compromise",
+                "Rapid symptom progression"
+            ],
+            "disclaimer": "This is not a medical diagnosis. Seek emergency care immediately."
+        }
+    },
+    {
+        "case_id": "d23e2639-1773-4890-83ba-a3f9016c7391",
+        "timestamp": "2026-02-14T11:16:32.493192",
+        "symptoms": "Difficulty breathing and swelling lips\r\n",
+        "image_analysis": {
+            "width": 1024,
+            "height": 1536,
+            "redness_ratio": 0.722,
+            "resolution_quality": "High"
+        },
+        "result": {
+            "case_id": "d23e2639-1773-4890-83ba-a3f9016c7391",
+            "primary_condition": "Severe Allergic Reaction (Anaphylaxis Suspected)",
+            "confidence": 0.95,
+            "urgency_level": "Emergency",
+            "reasoning": "Presence of airway or systemic symptoms suggests possible anaphylaxis.",
+            "differential_diagnosis": [],
+            "recommendations": [
+                "Call emergency services immediately.",
+                "Seek urgent hospital care."
+            ],
+            "warning_signs": [
+                "Airway compromise",
+                "Rapid symptom progression"
+            ],
+            "disclaimer": "This is not a medical diagnosis. Seek emergency care immediately."
+        }
+    }
+]

@@ -1,3 +1,294 @@
+🩺 DermSight Backend
+
+AI-Powered Multimodal Clinical Triage API built using FastAPI, SQLAlchemy, and Groq (Llama 3.1).
+
+🚀 Overview
+
+DermSight Backend is a medical triage engine that combines:
+
+📄 Symptom text analysis
+
+🖼️ Image redness detection (computer vision signal)
+
+🧠 Deterministic clinical risk scoring
+
+🤖 LLM-based structured medical reasoning
+
+The system performs early risk assessment and classifies cases into urgency levels such as:
+
+🟢 Routine
+
+🟡 Monitor
+
+🟠 Urgent
+
+🔴 Emergency
+
+This is not a diagnostic system, but a responsible early triage support tool.
+
+⚙️ Tech Stack
+
+FastAPI
+
+SQLAlchemy
+
+SQLite (can be replaced with PostgreSQL)
+
+NumPy & Pillow (image processing)
+
+Groq API (Llama 3.1)
+
+Uvicorn
+
+📌 Features
+1️⃣ Deterministic Clinical Rule Engine
+
+Regex-based symptom signal detection
+
+Risk score calculation
+
+Transparent reasoning output
+
+Emergency override logic
+
+2️⃣ Multimodal Signal Fusion
+
+Text-based clinical indicators
+
+Image-based redness intensity score
+
+3️⃣ AI Explanation Layer
+
+Structured JSON output:
+
+Summary
+
+Clinical reasoning
+
+Differential diagnoses
+
+Warning signs
+
+Medical safety constraints
+
+4️⃣ Case Persistence
+
+Stores:
+
+Symptoms
+
+Prediction
+
+Confidence
+
+Urgency level
+
+Image redness score
+
+Timestamp
+
+Supports follow-up case comparison.
+
+📡 API Endpoint
+POST /analyze/
+
+Request (multipart/form-data):
+
+symptoms (string)
+
+image (JPEG/PNG)
+
+follow_up_case_id (optional integer)
+
+Response:
+
+{
+  "case_id": 1,
+  "prediction": "Possible Skin Infection",
+  "confidence": 0.86,
+  "urgency": "Urgent",
+  "urgency_color": "ORANGE",
+  "risk_score": 5,
+  "clinical_reasoning": [],
+  "image_redness_score": 42.3,
+  "ai_explanation": {},
+  "disclaimer": "This is not a medical diagnosis."
+}
+
+🔐 Environment Variables
+
+Create a .env file:
+
+GROQ_API_KEY=your_api_key_here
+
+
+Never commit this file to GitHub.
+
+▶️ Run Locally
+python -m venv venv
+venv\Scripts\activate
+pip install -r requirements.txt
+uvicorn app.main:app --reload
+
+
+API will run at:
+
+http://127.0.0.1:8000
+
+
+Swagger Docs:
+
+http://127.0.0.1:8000/docs
+
+⚠️ Disclaimer
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 COMPLETE ARCHITECTURE DIAGRAM FILE
 Copy-paste this EXACTLY into a file called ARCHITECTURE.md in your repositories:
 

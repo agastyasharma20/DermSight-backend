@@ -3,22 +3,17 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.db.database import engine, Base
 from app.routes import analyze
 
-app = FastAPI(
-    title="DermSight API",
-    version="1.0.0"
-)
+app = FastAPI(title="DermSight API", version="1.0.0")
 
-# 🔥 TEMPORARY WIDE OPEN CORS FOR HACKATHON DEMO
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # allow everything temporarily
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
 Base.metadata.create_all(bind=engine)
-
 app.include_router(analyze.router)
 
 @app.get("/")

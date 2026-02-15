@@ -12,15 +12,9 @@ from app.models.case import Case
 from app.services.llm_service import generate_clinical_analysis
 
 router = APIRouter(prefix="/analyze", tags=["Analyze"])
-
-
-# =====================================================
-# CLINICAL RULE ENGINE (Deterministic + Explainable)
-# =====================================================
-
 def clinical_risk_engine(symptoms: str, redness_score: float) -> Dict:
-    text = symptoms.lower()
 
+    text = symptoms.lower()
     risk_score = 0
     reasoning = []
 
@@ -28,7 +22,7 @@ def clinical_risk_engine(symptoms: str, redness_score: float) -> Dict:
 
     if re.search(r"\bfever\b", text):
         risk_score += 2
-        reasoning.append("Fever detected — systemic involvement possible.")
+        reasoning.append("Fever detected — possible systemic involvement.")
 
     if re.search(r"\bred\b|\bredness\b", text):
         risk_score += 2
@@ -99,13 +93,8 @@ def clinical_risk_engine(symptoms: str, redness_score: float) -> Dict:
         "risk_score": risk_score,
         "clinical_reasoning": reasoning
     }
-
-
-# =====================================================
-# IMAGE PROCESSING
-# =====================================================
-
 def calculate_redness(contents: bytes) -> float:
+
     img = Image.open(io.BytesIO(contents)).convert("RGB")
     img_array = np.array(img)
 
@@ -113,14 +102,9 @@ def calculate_redness(contents: bytes) -> float:
     green = img_array[:, :, 1]
     blue = img_array[:, :, 2]
 
-    redness = np.mean(red - (green + blue) / 2)
-    return float(max(0, redness))
+    redness_value = np.mean(red - (green + blue) / 2)
 
-
-# =====================================================
-# ANALYZE ENDPOINT
-# =====================================================
-
+    return float(max(0, redness_value))
 @router.post("/")
 async def analyze_case(
     symptoms: str = Form(...),
@@ -129,41 +113,46 @@ async def analyze_case(
     db: Session = Depends(get_db)
 ):
 
+    # ---------------- VALIDATION ----------------
+
     if len(symptoms.strip()) < 5:
-        raise HTTPException(status_code=400, detail="Symptoms too short.")
+        raise HTTPException(status_code=400, detail="Symptoms description too short.")
 
     if image.content_type not in ["image/jpeg", "image/png", "image/jpg"]:
-        raise HTTPException(status_code=400, detail="Only JPEG/PNG allowed.")
+        raise HTTPException(status_code=400, detail="Only JPEG and PNG images allowed.")
 
-    # ---------------- PROCESS IMAGE ----------------
+    # ---------------- IMAGE PROCESSING ----------------
+
     try:
         contents = await image.read()
         redness_score = calculate_redness(contents)
     except Exception:
         raise HTTPException(status_code=400, detail="Invalid image file.")
 
-    # ---------------- CORE TRIAGE ----------------
+    # ---------------- CORE TRIAGE ENGINE ----------------
+
     result = clinical_risk_engine(symptoms, redness_score)
 
     # ---------------- EMERGENCY OVERRIDE ----------------
+
     emergency_action = None
     if result["urgency"] == "Emergency":
         emergency_action = "🚨 SEEK IMMEDIATE MEDICAL CARE. CALL EMERGENCY SERVICES."
 
     # ---------------- PROGRESS TRACKING ----------------
-    improvement = None
-    previous_redness = None
+
+    improvement_percentage = None
 
     if follow_up_case_id:
         previous_case = db.query(Case).filter(Case.id == follow_up_case_id).first()
-        if previous_case:
-            previous_redness = previous_case.image_redness_score
 
-            if previous_redness:
-                change = previous_redness - redness_score
-                improvement = round((change / previous_redness) * 100, 2)
+        if previous_case and previous_case.image_redness_score:
+            previous_redness = previous_case.image_redness_score
+            change = previous_redness - redness_score
+            improvement_percentage = round((change / previous_redness) * 100, 2)
 
     # ---------------- LLM EXPLANATION ----------------
+
     try:
         ai_explanation = generate_clinical_analysis(
             symptoms_text=symptoms,
@@ -173,13 +162,14 @@ async def analyze_case(
         )
     except Exception:
         ai_explanation = {
-            "summary": "AI explanation unavailable.",
+            "summary": "AI explanation temporarily unavailable.",
             "reasoning": [],
             "differentials": [],
             "warning_signs": []
         }
 
-    # ---------------- SAVE CASE ----------------
+    # ---------------- SAVE TO DATABASE ----------------
+
     new_case = Case(
         symptoms=symptoms,
         prediction=result["prediction"],
@@ -194,6 +184,7 @@ async def analyze_case(
     db.refresh(new_case)
 
     # ---------------- FINAL RESPONSE ----------------
+
     return {
         "case_id": new_case.id,
         "prediction": result["prediction"],
@@ -203,7 +194,7 @@ async def analyze_case(
         "risk_score": result["risk_score"],
         "clinical_reasoning": result["clinical_reasoning"],
         "image_redness_score": redness_score,
-        "improvement_percentage": improvement,
+        "improvement_percentage": improvement_percentage,
         "emergency_action": emergency_action,
         "ai_explanation": ai_explanation,
         "disclaimer": "This is not a medical diagnosis. Seek professional medical advice."

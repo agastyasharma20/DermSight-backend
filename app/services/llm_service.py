@@ -11,19 +11,23 @@ if not api_key:
     raise ValueError("GROQ_API_KEY not found in environment variables.")
 
 client = Groq(api_key=api_key)
-
-
-
-def generate_clinical_analysis(symptoms, image_data, risk_score, urgency):
-
+def generate_clinical_analysis(
+    symptoms_text: str,
+    redness_score: float,
+    confidence: float,
+    urgency: str
+):
     prompt = f"""
 You are a responsible dermatology-focused medical triage AI assistant.
 
 Patient symptoms:
-{symptoms}
+{symptoms_text}
 
-Computed risk score:
-{risk_score}
+Image redness score:
+{redness_score}
+
+Model confidence:
+{confidence}
 
 Urgency level:
 {urgency}
@@ -45,33 +49,29 @@ Respond ONLY in valid JSON format:
   ]
 }}
 
-Rules:0
+Rules:
 If urgency is Emergency due to airway symptoms,
 limit differentials to allergic or systemic causes.
 Avoid minor dermatologic conditions.
-
-- Do NOT mention cardiac arrest.
-- Stay within dermatologic or allergic conditions.
-- Do NOT provide definitive diagnosis.
-- Keep output medically realistic.
+Do NOT provide definitive diagnosis.
+Keep output medically realistic.
 """
 
-
-    response = client.chat.completions.create(
-        model="llama-3.1-8b-instant",
-        messages=[
-            {"role": "user", "content": prompt}
-        ],
-        temperature=0.2
-    )
-
-    content = response.choices[0].message.content
-
     try:
+        response = client.chat.completions.create(
+            model="llama-3.1-8b-instant",
+            messages=[{"role": "user", "content": prompt}],
+            temperature=0.2
+        )
+
+        content = response.choices[0].message.content.strip()
+
         return json.loads(content)
-    except:
+
+    except Exception as e:
+        print("LLM ERROR:", e)
         return {
-            "summary": content,
+            "summary": "AI explanation temporarily unavailable.",
             "reasoning": [],
             "differentials": [],
             "warning_signs": []
